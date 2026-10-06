@@ -1,7 +1,276 @@
 # AI CLI Orchestrator
 
-Public repository bootstrap for the AI CLI Orchestrator project.
+複数のAIコーディングCLIを、1つのデスクトップUIから切り替え・再開・監視できる開発オーケストレーターです。
 
-See issue #11 for the complete README and issue #1 for the MVP architecture.
+> Status: **設計 / 初期実装フェーズ**
+>
+> 現時点ではMVP仕様をIssueで整理している段階です。README内の「予定」「MVP」は未実装機能を含みます。
 
-> Bootstrap note: this initial commit exists only to create the default branch required for normal Issue → branch → PR development. Subsequent changes are made through pull requests.
+## 背景
+
+Codex、Claude Code、Grok、Google Antigravityなど、複数のAIコーディングCLIを併用すると、以下が開発効率のボトルネックになります。
+
+- 5時間枠・週次枠・クレジット等の利用制限
+- 認証切れ、契約停止、課金状態、サービス障害
+- CLIごとのセッション管理方法の違い
+- 利用上限到達時の手動切り替え
+- ターミナル中心の操作による視認性の低さ
+- CLIごとに分断された作業履歴
+
+AI CLI Orchestratorは、これらを統合し、**作業を止めずに次の利用可能なCLIへ切り替える**ことを目的とします。
+
+## 目標
+
+- macOS / Windowsで動作するデスクトップUI
+- Codex / Claude Code / Grok / Google Antigravityの統合
+- CLIごとの優先順位設定
+- 利用可能性・quota・認証状態・障害を考慮した自動切り替え
+- 各CLIのネイティブなresume / continue機能を優先利用
+- CLI切り替え時のPortable Context Handoff
+- Chat / Editor / Terminal / Provider Statusの統合表示
+- Gitがないフォルダでも利用可能
+- GitHub repository検出時はIssue + PRワークフローを自動支援
+- Git worktreeに依存しない通常branch運用
+
+## 対象CLI
+
+| Provider | CLI | Session継続 | 方針 |
+|---|---|---|---|
+| OpenAI | Codex CLI | resume / thread resume | ネイティブセッションを優先 |
+| Anthropic | Claude Code | resume / continue | ネイティブセッションを優先 |
+| xAI | Grok CLI | --resume / --continue | ネイティブセッションを優先 |
+| Google | Antigravity CLI | --conversation / --continue | ネイティブセッションを優先 |
+
+CLIの仕様差分はCoreへ直接埋め込まず、Provider Adapterで吸収します。
+
+## なぜresumeを重視するのか
+
+同じProviderへ戻るたびに会話を要約して渡し直すと、コンテキスト欠落、追加トークン消費、再解析コストが発生します。
+
+そのため同一Providerでは、可能な限りそのCLI自身が持つセッションIDを保存し、ネイティブresumeを使います。
+
+別Providerへ切り替える場合のみ、必要最小限の作業状態をPortable Context Envelopeとして再構成します。
+
+### Portable Context Envelope
+
+予定している内容:
+
+- user goal
+- accepted plan
+- completed tasks
+- pending tasks
+- relevant files
+- diagnostics
+- recent command results
+- previous provider
+- switch reason
+- safety / permission state
+- optional git status / diff
+
+Git情報はGit repositoryの場合だけ含めます。
+
+## Workspace Mode
+
+### Local Workspace Mode
+
+Git repositoryでなくても利用できます。
+
+予定機能:
+
+- 任意フォルダを開く
+- Unified Chat
+- Monaco Editor
+- Integrated Terminal
+- Task管理
+- CLI session resume
+- Provider自動切り替え
+- SQLiteによる履歴保存
+
+Git初期化は要求しません。
+
+### Repository Mode
+
+Git repositoryを検出した場合のみ追加機能を有効にします。
+
+- branch管理
+- git status / diff
+- GitHub remote検出
+- Issue / PR支援
+- review workflow
+
+**git worktreeは使用しません。**
+
+## GitHub Repository Workflow
+
+GitHub repository上の開発タスクでは、IssueとPRをワンセットにすることを既定ワークフローとします。
+
+1. 既存Issue確認
+2. Issue作成
+3. 基本設計
+4. 詳細設計
+5. 通常branch作成
+6. 実装
+7. test / lint / build
+8. 敵対レビュー
+9. PR作成
+10. review / fix
+11. merge準備
+
+Repositoryがない場合、このフローは強制せずLocal Workspace Modeとして動作します。
+
+## Routing
+
+Provider選択は単純なラウンドロビンではなく、以下を考慮します。
+
+- user priority
+- provider enabled / disabled
+- CLI availability
+- authentication state
+- billing state
+- quota state
+- health
+- cooldown
+- circuit breaker
+- task capability
+- current session resumability
+
+想定状態:
+
+- available
+- degraded
+- quota_exhausted
+- auth_required
+- billing_blocked
+- unavailable
+- disabled
+- unknown
+
+`unknown`を無条件に`available`として扱わない設計にします。
+
+## Failover
+
+Provider切り替えは、単純に同じ命令を再送するだけではありません。
+
+ファイル変更、コマンド実行、外部操作などの副作用が発生した後に自動再実行すると、二重変更や破壊的操作につながるためです。
+
+MVPでは以下を基本方針とします。
+
+- read-only処理: 安全な範囲で自動再試行
+- transient error: bounded retry後にfailover
+- quota exhaustion: 次Providerへ
+- auth / billing: 自動再試行しない
+- destructive / write side effect後: 状態確認後に継続
+- provider switch: Portable Context Envelopeを生成
+
+## Architecture
+
+```mermaid
+flowchart LR
+    UI[Desktop UI<br/>React + TypeScript]
+    EDITOR[Monaco Editor]
+    TERM[xterm.js]
+    CORE[Rust Core]
+    ROUTER[Provider Router]
+    SESSION[Native Resume Registry]
+    CONTEXT[Portable Context Handoff]
+    DB[(SQLite)]
+    CODEX[Codex Adapter]
+    CLAUDE[Claude Adapter]
+    GROK[Grok Adapter]
+    AGY[Antigravity Adapter]
+
+    UI --> CORE
+    EDITOR --> UI
+    TERM --> UI
+    CORE --> ROUTER
+    CORE --> SESSION
+    CORE --> CONTEXT
+    CORE --> DB
+    ROUTER --> CODEX
+    ROUTER --> CLAUDE
+    ROUTER --> GROK
+    ROUTER --> AGY
+    SESSION --> CODEX
+    SESSION --> CLAUDE
+    SESSION --> GROK
+    SESSION --> AGY
+```
+
+## 技術スタック
+
+MVP予定:
+
+- Desktop: Tauri 2
+- Frontend: React + TypeScript
+- Editor: Monaco Editor
+- Terminal: xterm.js
+- Core: Rust
+- Local DB: SQLite
+- CLI Integration: subprocess / PTY + Provider Adapter
+- CI: GitHub Actions
+- Platforms: macOS / Windows
+
+採用技術はADRで確定させます。
+
+## Security
+
+基本方針:
+
+- APIキーやアクセストークンを独自DBへ保存しない
+- 各CLIの公式認証ストアを尊重する
+- shell文字列連結ではなく引数配列でプロセス起動
+- path traversal / symlink / malicious workspaceを考慮
+- secretをログへ残さない
+- CLIのsandbox / permission / allow / deny設定を尊重
+- Provider切り替え時の副作用重複を防止
+- 無制限なchild process生成を防止
+- 危険な自動承認を既定にしない
+
+## MVP Issues
+
+- #1 Multi-CLI AI IDE Orchestrator MVP
+- #2 基本設計・詳細設計・ADR
+- #3 Native Resume Registry / Session切替
+- #4 Router / Quota / Health / Failover
+- #5 Codex / Claude / Grok / Antigravity Adapter
+- #6 Desktop UI
+- #7 Local Workspace + GitHub Repository Workflow
+- #8 SQLite / Portable Context Handoff
+- #9 macOS / Windows Build・CLI検出・CI
+- #10 Security / Test / 敵対レビュー
+- #11 README
+
+## 開発ルール
+
+このrepository自身の開発では、原則として以下を必須とします。
+
+- Issue
+- 基本設計
+- 詳細設計
+- branch
+- test
+- 敵対レビュー
+- PR
+- 事実ベースの仕様確認
+- 最新安定版との互換性確認
+
+空repositoryを初期化してPRのbase branchを作るための最初のbootstrap commitのみ例外です。
+
+## 公式仕様の確認先
+
+仕様変更が頻繁なため、Provider Adapter実装時は必ず公式情報を再確認します。
+
+- OpenAI Codex: https://developers.openai.com/
+- Anthropic Claude Code: https://docs.anthropic.com/en/docs/claude-code/
+- xAI Grok CLI: https://docs.x.ai/build/cli/
+- Google Antigravity CLI: https://antigravity.google/docs/cli/
+
+## License
+
+未定。公開OSSとしてのライセンスは別Issueで決定します。
+
+## Current Status
+
+現在は基本設計・詳細設計・MVP Issue分割を進めています。
+
+実装開始前に、#2でアーキテクチャ、session、routing、security boundary、macOS/Windows差異を確定します。
