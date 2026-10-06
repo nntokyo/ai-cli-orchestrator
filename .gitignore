@@ -1,0 +1,166 @@
+# ============================================================
+# AI CLI Orchestrator - Git ignore rules
+# ============================================================
+#
+# Keep reproducibility files tracked:
+# - Cargo.lock
+# - package-lock.json / pnpm-lock.yaml / yarn.lock
+# - shared provider/project configuration
+#
+# Do not ignore provider directories wholesale. Some provider files may
+# intentionally become part of the repository in the future.
+
+# ------------------------------------------------------------
+# Node / frontend
+# ------------------------------------------------------------
+
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+.turbo/
+.parcel-cache/
+.cache/
+.eslintcache
+*.tsbuildinfo
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test output
+playwright-report/
+test-results/
+blob-report/
+
+# ------------------------------------------------------------
+# Rust / Tauri
+# ------------------------------------------------------------
+
+target/
+
+# Cargo.lock is intentionally NOT ignored because this is an application.
+
+# ------------------------------------------------------------
+# Environment variables / local secrets
+# ------------------------------------------------------------
+
+.env
+.env.*
+!.env.example
+!.env.template
+
+.secrets/
+
+# Signing / provisioning credentials
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+
+# ------------------------------------------------------------
+# AI CLI Orchestrator local runtime data
+# ------------------------------------------------------------
+#
+# Keep future shareable project configuration outside these local-only
+# subdirectories so it can be committed intentionally.
+
+.ai-cli-orchestrator/runtime/
+.ai-cli-orchestrator/cache/
+.ai-cli-orchestrator/sessions/
+.ai-cli-orchestrator/checkpoints/
+.ai-cli-orchestrator/logs/
+.ai-cli-orchestrator/*.sqlite
+.ai-cli-orchestrator/*.sqlite3
+.ai-cli-orchestrator/*.sqlite-*
+.ai-cli-orchestrator/*.sqlite3-*
+
+# Generic SQLite runtime files. Do not ignore every *.db file globally,
+# because test fixtures or intentionally versioned databases may exist.
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db-wal
+*.db-shm
+
+# ------------------------------------------------------------
+# Provider-local settings
+# ------------------------------------------------------------
+
+# Claude Code local-only override. Keep the rest of .claude/ trackable.
+.claude/settings.local.json
+
+# Intentionally do NOT blanket-ignore:
+# .claude/
+# .codex/
+# .gemini/
+# .mcp.json
+
+# ------------------------------------------------------------
+# Editors / IDEs
+# ------------------------------------------------------------
+
+.idea/
+*.iml
+
+# Visual Studio local state
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code: ignore local files by default but allow common shared config.
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Vim / swap / backup
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------
+# macOS
+# ------------------------------------------------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# ------------------------------------------------------------
+# Windows
+# ------------------------------------------------------------
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ------------------------------------------------------------
+# Temporary / local output
+# ------------------------------------------------------------
+
+tmp/
+temp/
+logs/
+*.log
+*.tmp
+*.temp
+
+# Local crash dumps
+*.dmp
+*.crash
+
+# Local patch/reject artifacts
+*.orig
+*.rej
