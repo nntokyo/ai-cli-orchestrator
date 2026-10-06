@@ -89,3 +89,20 @@ CLI仕様は変化しやすいため、実装時に公式documentationを再確�
 ## Review
 
 P0およびbehavior-changing変更では [敵対レビュー基準](docs/adversarial-review.md) に沿った敵対レビューを必須とします。
+
+
+## Contribution license
+
+This project is licensed under the Apache License, Version 2.0 (`Apache-2.0`).
+
+Unless you explicitly state otherwise in a manner accepted by the project, a contribution intentionally submitted for inclusion in this repository is provided under the Apache-2.0 terms, consistent with Section 5 of the license.
+
+By opening a Pull Request, ensure that:
+
+- you have the right to submit the contributed material;
+- newly added third-party code/assets are identified with their original license and attribution requirements;
+- provider proprietary code or other material that cannot be relicensed is not copied into this repository;
+- required NOTICE/attribution information is preserved;
+- generated code or assets are reviewed for licensing provenance before inclusion.
+
+A separate CLA is not currently required. See [Licensing Policy](docs/licensing.md) for the current project policy.

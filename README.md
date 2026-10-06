@@ -233,6 +233,7 @@ MVP予定:
 - [敵対レビュー基準](docs/adversarial-review.md)
 - [CONTRIBUTING](CONTRIBUTING.md)
 - [GitHub Development Workflow](docs/development-workflow.md)
+- [Licensing Policy](docs/licensing.md)
 - [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
 - [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
 - [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
@@ -288,7 +289,13 @@ MVP予定:
 
 ## License
 
-未定。公開OSSとしてのライセンスは別Issueで決定します。
+AI CLI Orchestrator is licensed under the **Apache License, Version 2.0** (`Apache-2.0`).
+
+- [LICENSE](LICENSE)
+- [NOTICE](NOTICE)
+- [Licensing Policy](docs/licensing.md)
+
+このライセンスは本プロジェクト自身のコード・資料等に適用されます。Codex / Claude Code / Grok / Google Antigravityなどの第三者CLI、API、依存ライブラリ、商標は、それぞれの提供元のライセンス・利用規約・商標ポリシーに従います。
 
 ## Current Status
 

@@ -57,7 +57,18 @@ Result / evidence:
 - Antigravity:
 - Other / N/A:
 
+## Licensing / Third-Party Impact
+
+<!-- New dependencies/assets, license compatibility, attribution/NOTICE, provider redistribution terms, or N/A with reason. -->
+
+- [ ] No new third-party dependency/asset, or license obligations were reviewed
+- [ ] Required attribution / NOTICE impact was reviewed
+- [ ] Provider CLI/API redistribution or trademark terms were reviewed when relevant
+
+Details:
+
 ## Security / Permission Impact
+
 
 <!-- Secrets, subprocess, filesystem, network, sandbox, permission mapping, remote actions, or N/A with reason. -->
 
@@ -86,4 +97,5 @@ Findings / fixes:
 - [ ] Tests/validation are complete
 - [ ] Adversarial review is recorded
 - [ ] Latest relevant provider/CLI compatibility was checked for code changes
+- [ ] Licensing / third-party obligations were reviewed
 - [ ] No unresolved blocker remains
