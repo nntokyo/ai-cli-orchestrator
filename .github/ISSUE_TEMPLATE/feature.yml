@@ -1,0 +1,94 @@
+name: Feature request
+description: New functionality or product behavior
+title: "[P1] "
+labels:
+  - enhancement
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before implementation, confirm the issue has an owner, labels, basic design, detailed design, and acceptance criteria.
+        The assignee is the current implementation owner and may change when work is handed over.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Keep the same priority prefix in the issue title.
+      options:
+        - P0 - blocking / critical path
+        - P1 - high priority
+        - P2 - normal priority
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: What problem exists today and why does it matter?
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: Describe the intended outcome, not only the implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope / Non-Scope
+      description: State what is included and explicitly excluded.
+    validations:
+      required: true
+  - type: textarea
+    id: basic_design
+    attributes:
+      label: Basic design
+      description: Components, boundaries, workflow, and major decisions.
+    validations:
+      required: true
+  - type: textarea
+    id: detailed_design
+    attributes:
+      label: Detailed design
+      description: Interfaces, state, failure handling, data model, and platform differences.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use verifiable conditions.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Related issues, PRs, providers, or external constraints.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Test / Validation plan
+      description: Unit, integration, E2E, manual verification, or docs-only validation.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Security / Compatibility impact
+      description: macOS, Windows, CLI/provider versions, permissions, secrets, migration, or N/A with reason.
+    validations:
+      required: true
+  - type: checkboxes
+    id: ownership
+    attributes:
+      label: Ownership
+      options:
+        - label: I understand the assignee represents the current implementation owner and should be updated on handoff.
+          required: true
