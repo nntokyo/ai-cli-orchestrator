@@ -226,6 +226,20 @@ MVP予定:
 - 無制限なchild process生成を防止
 - 危険な自動承認を既定にしない
 
+## Design Documents
+
+- [基本設計](docs/basic-design.md)
+- [詳細設計](docs/detailed-design.md)
+- [敵対レビュー基準](docs/adversarial-review.md)
+- [CONTRIBUTING](CONTRIBUTING.md)
+- [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
+- [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
+- [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
+- [ADR-0004 Git Optional Workspace](docs/adr/0004-workspace-git-optional.md)
+- [ADR-0005 Single Writer](docs/adr/0005-single-writer.md)
+- [ADR-0006 Transport Abstraction](docs/adr/0006-transport.md)
+- [ADR-0007 Unified Permission Policy](docs/adr/0007-permission-policy.md)
+
 ## MVP Issues
 
 - #1 Multi-CLI AI IDE Orchestrator MVP
