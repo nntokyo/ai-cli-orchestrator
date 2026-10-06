@@ -1,0 +1,77 @@
+name: Architecture / technical design
+description: Core architecture, ADR, refactor boundary, compatibility, or cross-cutting change
+title: "[P0] [ARCH] "
+labels:
+  - enhancement
+  - documentation
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Architecture work must be reviewed before implementation.
+        Do not hard-code a maintainer as assignee: ownership follows the person currently responsible for implementation.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 - architectural prerequisite / blocker
+        - P1 - important architecture improvement
+        - P2 - planned improvement
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / Problem
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Proposed basic design
+      description: Boundaries, components, responsibilities, data flow, and major trade-offs.
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: Detailed design
+      description: Interfaces, state machines, persistence, recovery, concurrency, failure behavior, OS/provider differences.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include why rejected options were not selected.
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility / Migration
+      description: macOS, Windows, CLI versions, data migration, backward compatibility.
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security impact
+      description: Permissions, secrets, subprocess, network, filesystem, failover, or N/A with reason.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ADR/docs updated
+        - [ ] Implementation issues can reference this design
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / Follow-ups

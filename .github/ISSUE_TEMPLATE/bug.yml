@@ -1,0 +1,88 @@
+name: Bug report
+description: Reproducible defect or regression
+title: "[P0] [BUG] "
+labels:
+  - bug
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For security vulnerabilities, do not use this public form. Use the private Security Advisory link.
+        Assignees are not hard-coded because this is a public repository; assign the current implementation owner when work starts.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 - blocking / data loss / security-adjacent
+        - P1 - major regression
+        - P2 - normal defect
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, app version, provider CLI, provider CLI version, shell, execution environment.
+      placeholder: |
+        OS:
+        Architecture:
+        Provider:
+        CLI version:
+        Shell:
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs with secrets removed, screenshots, exit codes, normalized events, or fixture data.
+  - type: textarea
+    id: analysis
+    attributes:
+      label: Fact-based analysis / suspected boundary
+      description: Separate verified facts from hypotheses.
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Basic / Detailed fix design
+      description: Required before non-trivial implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Regression test reproduces the old failure
+        - [ ] Fix passes on affected platforms/providers
+    validations:
+      required: true
+  - type: textarea
+    id: security_compat
+    attributes:
+      label: Security / Compatibility impact
+      description: Include macOS/Windows and provider compatibility, or N/A with reason.
+    validations:
+      required: true

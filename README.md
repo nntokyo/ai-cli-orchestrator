@@ -232,6 +232,7 @@ MVP予定:
 - [詳細設計](docs/detailed-design.md)
 - [敵対レビュー基準](docs/adversarial-review.md)
 - [CONTRIBUTING](CONTRIBUTING.md)
+- [GitHub Development Workflow](docs/development-workflow.md)
 - [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
 - [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
 - [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
@@ -253,6 +254,12 @@ MVP予定:
 - #9 macOS / Windows Build・CLI検出・CI
 - #10 Security / Test / 敵対レビュー
 - #11 README
+- #13 Session Identity / Resume Validation
+- #14 Single Writer Lock
+- #15 Transport Abstraction
+- #16 Non-Git Checkpoint / Crash Recovery
+- #17 Unified Permission / Sandbox Policy
+- #19 GitHub Issue/PR Workflow & Templates
 
 ## 開発ルール
 
@@ -285,6 +292,4 @@ MVP予定:
 
 ## Current Status
 
-現在は基本設計・詳細設計・MVP Issue分割を進めています。
-
-実装開始前に、#2でアーキテクチャ、session、routing、security boundary、macOS/Windows差異を確定します。
+基本設計・詳細設計・ADRはmainへ反映済みです。現在はIssue/PR運用を固定し、P0 Core実装Issueへ移行する段階です。
