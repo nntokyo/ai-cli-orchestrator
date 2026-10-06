@@ -160,6 +160,7 @@ Required:
 - Windows impact
 - provider/CLI compatibility
 - security/permission impact
+- licensing / third-party impact
 - adversarial review
 - merge checklist
 
@@ -225,5 +226,6 @@ Before merge:
 - adversarial review completed where required
 - documentation updated
 - compatibility/security impact recorded
+- dependency/provider licensing and NOTICE impact reviewed when relevant
 
 Squash merge is preferred for focused Issue-driven PRs unless preserving commit history is materially useful.
