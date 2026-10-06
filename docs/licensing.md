@@ -27,6 +27,15 @@ Apache-2.0 was selected because it is a permissive open-source license and inclu
 
 Compared with the MIT License, Apache-2.0 is longer and imposes more redistribution/notice requirements, but the explicit patent terms are useful for a project expected to accept external contributions and enterprise use.
 
+Key redistribution obligations include, at a high level:
+
+- provide recipients with a copy of the Apache-2.0 license;
+- mark files that you modified with prominent change notices;
+- retain applicable copyright, patent, trademark, and attribution notices in source distributions;
+- preserve applicable NOTICE information when the distributed work includes a NOTICE file.
+
+The `LICENSE` file is authoritative; this summary does not replace its terms.
+
 ## Contributions
 
 Unless a contributor explicitly states otherwise in a manner accepted by the project, an intentional contribution submitted for inclusion in this repository is provided under the Apache License 2.0 terms, consistent with Section 5 of the license.
