@@ -165,6 +165,7 @@ MVPでは以下を基本方針とします。
 - auth / billing: 自動再試行しない
 - destructive / write side effect後: 状態確認後に継続
 - provider switch: Portable Context Envelopeを生成
+- exit code 0でもtool/permissionがsoft-denyされた場合は成功扱いしない
 
 ## Architecture
 
