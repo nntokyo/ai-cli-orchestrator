@@ -82,6 +82,39 @@ ProviderSession {
 }
 ```
 
+### RepositoryHostLink
+
+```text
+RepositoryHostLink {
+  id: UUID
+  workspace_id: UUID
+  host: github
+  repository_owner: String
+  repository_name: String
+  remote_name: String
+  remote_url: String
+  upstream_owner?: String
+  upstream_name?: String
+  auth_state
+  permission_state
+  last_verified_at
+}
+```
+
+### LocalDataPolicy
+
+```text
+LocalDataPolicy {
+  workspace_id: UUID
+  event_retention
+  log_retention
+  checkpoint_retention
+  raw_event_storage: disabled | bounded
+  redact_secrets: bool
+  updated_at
+}
+```
+
 ## 2. Resume validation
 
 resume前:
