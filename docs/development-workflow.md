@@ -164,9 +164,16 @@ Required:
 - adversarial review
 - merge checklist
 
-Use `Closes #N` when the PR fully satisfies the Issue.
+The PR template defaults to `Refs #N`.
 
-Do not close an Issue from a PR that only partially implements its acceptance criteria.
+Only when the PR fully satisfies the Issue acceptance criteria should the author replace `Refs` with a GitHub closing keyword.
+
+For a partial PR:
+- keep `Refs #N`;
+- do not place a GitHub closing keyword immediately before the real Issue reference anywhere in the PR body;
+- do not use a negated sentence containing a closing keyword followed by the real Issue number, because GitHub may still parse the literal keyword/reference pair and close the Issue.
+
+After merge, verify the linked Issue state whenever the PR was intentionally partial.
 
 ## 9. Adversarial Review
 
