@@ -11,7 +11,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "check": "tsc --pretty false",
+    "typecheck": "tsc --pretty false",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "quality": "biome check .",
+    "check": "pnpm typecheck && biome ci .",
     "preview": "vite preview",
     "tauri": "tauri"
   },
@@ -25,6 +30,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "typescript": "7.0.2",
-    "vite": "8.3.2"
+    "vite": "8.3.2",
+    "@biomejs/biome": "2.5.14"
   }
 }
