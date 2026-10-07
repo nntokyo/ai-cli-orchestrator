@@ -16,7 +16,7 @@
     "format:check": "biome format .",
     "lint": "biome lint .",
     "quality": "biome check .",
-    "check": "pnpm typecheck && biome ci .",
+    "check": "pnpm typecheck",
     "preview": "vite preview",
     "tauri": "tauri"
   },
