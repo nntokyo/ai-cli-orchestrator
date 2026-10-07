@@ -225,6 +225,26 @@ mod tests {
         path
     }
 
+    fn workspace_id(value: &str) -> WorkspaceId {
+        WorkspaceId::new(value).expect("valid workspace id")
+    }
+
+    fn task_id(value: &str) -> TaskId {
+        TaskId::new(value).expect("valid task id")
+    }
+
+    fn provider_id(value: &str) -> ProviderId {
+        ProviderId::new(value).expect("valid provider id")
+    }
+
+    fn session_id(value: &str) -> SessionId {
+        SessionId::new(value).expect("valid session id")
+    }
+
+    fn native_session_id(value: &str) -> NativeSessionId {
+        NativeSessionId::new(value).expect("valid native session id")
+    }
+
     struct Fixture {
         root: PathBuf,
         session: ProviderSessionMetadata,
@@ -238,11 +258,11 @@ mod tests {
                 WorkspaceIdentity::resolve(&root).expect("temporary workspace should resolve");
 
             let session = ProviderSessionMetadata {
-                session_id: SessionId::from("session-1"),
-                native_session_id: NativeSessionId::from("native-1"),
-                workspace_id: WorkspaceId::from("workspace-1"),
-                task_id: TaskId::from("task-1"),
-                provider_id: ProviderId::from("provider-1"),
+                session_id: session_id("session-1"),
+                native_session_id: native_session_id("native-1"),
+                workspace_id: workspace_id("workspace-1"),
+                task_id: task_id("task-1"),
+                provider_id: provider_id("provider-1"),
                 canonical_cwd: workspace.canonical_path().to_path_buf(),
                 provider_version: Some("1.0.0".into()),
                 capability_snapshot: Some("resume-by-id".into()),
@@ -256,9 +276,9 @@ mod tests {
             };
 
             let current = ResumeContext {
-                workspace_id: WorkspaceId::from("workspace-1"),
-                task_id: TaskId::from("task-1"),
-                provider_id: ProviderId::from("provider-1"),
+                workspace_id: workspace_id("workspace-1"),
+                task_id: task_id("task-1"),
+                provider_id: provider_id("provider-1"),
                 workspace,
                 workspace_fingerprint: Some(WorkspaceFingerprint("fingerprint-a".into())),
                 git_snapshot: None,
@@ -295,7 +315,7 @@ mod tests {
     fn rejects_cross_task_session_even_for_continue_most_recent() {
         let mut fixture = Fixture::new();
         fixture.session.resume_capability = ResumeCapability::ContinueMostRecent;
-        fixture.current.task_id = TaskId::from("task-2");
+        fixture.current.task_id = task_id("task-2");
 
         assert_eq!(
             validate_resume(&fixture.session, &fixture.current),
@@ -308,7 +328,7 @@ mod tests {
     #[test]
     fn rejects_wrong_workspace() {
         let mut fixture = Fixture::new();
-        fixture.current.workspace_id = WorkspaceId::from("workspace-2");
+        fixture.current.workspace_id = workspace_id("workspace-2");
 
         assert_eq!(
             validate_resume(&fixture.session, &fixture.current),
@@ -321,7 +341,7 @@ mod tests {
     #[test]
     fn rejects_wrong_provider() {
         let mut fixture = Fixture::new();
-        fixture.current.provider_id = ProviderId::from("provider-2");
+        fixture.current.provider_id = provider_id("provider-2");
 
         assert_eq!(
             validate_resume(&fixture.session, &fixture.current),
