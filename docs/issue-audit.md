@@ -232,9 +232,13 @@ The following remain non-goals unless promoted by a later Issue:
 
 Checked on 2026-10-07:
 
-- OpenAI Codex developer docs and App Server guidance
-- Anthropic Claude Code CLI/SDK structured input/output and resume guidance
-- xAI Grok CLI reference, ACP, permissions and sandbox guidance
-- Google Antigravity CLI headless/resume/permissions guidance
+- OpenAI Codex App Server / platform guidance: https://developers.openai.com/blog/codex-as-a-platform
+- OpenAI Codex App Server auth/integration reference: https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server
+- Anthropic Claude Code CLI reference: https://docs.anthropic.com/en/docs/claude-code/cli-usage
+- xAI Grok CLI reference: https://docs.x.ai/build/cli/reference
+- xAI Grok headless/ACP: https://docs.x.ai/build/cli/headless-scripting
+- xAI Grok permissions: https://docs.x.ai/build/features/permissions
+- Google Antigravity headless: https://antigravity.google/docs/cli/headless/
+- Google Antigravity resume: https://antigravity.google/docs/cli/commands/resume/
 
 Provider specifications are fast-moving. This audit records architecture assumptions; implementation PRs must re-check the official docs and actual installed CLI.
