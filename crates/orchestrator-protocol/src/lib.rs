@@ -20,7 +20,7 @@ pub struct RequestId(pub String);
 /// Minimal request contract used to validate code generation before runtime
 /// IPC is enabled.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase", rename_all_fields = "camelCase")]
 #[ts(export, export_to = "protocol/")]
 pub enum CoreRequest {
     GetBootstrapStatus { request_id: RequestId },
@@ -28,7 +28,7 @@ pub enum CoreRequest {
 
 /// Core-to-frontend event contract.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase", rename_all_fields = "camelCase")]
 #[ts(export, export_to = "protocol/")]
 pub enum CoreEvent {
     BootstrapStatus {
