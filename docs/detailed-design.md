@@ -1,7 +1,10 @@
 # 詳細設計
 
 Issue: #2  
-Status: Proposed  
+Parent Epic: #1  
+Implementation bootstrap: #30  
+Task execution owner: #26  
+Status: Accepted for MVP  
 Updated: 2026-10-07
 
 ## 1. Core domain
@@ -39,6 +42,25 @@ Task {
 }
 ```
 
+### ExecutionRun
+
+```text
+ExecutionRun {
+  id: UUID
+  task_id: UUID
+  target_provider: String
+  target_model?: String
+  target_effort?: String
+  transport: String
+  provider_session_id?: UUID
+  status: planned | routed | starting | running | paused | failed | reroute | cancelling | cancelled | completed | blocked
+  started_at?
+  finished_at?
+  failure_class?
+  side_effect_state
+}
+```
+
 ### ProviderSession
 
 ```text
@@ -57,6 +79,39 @@ ProviderSession {
   status: active | resumable | stale | missing | closed
   created_at
   last_used_at
+}
+```
+
+### RepositoryHostLink
+
+```text
+RepositoryHostLink {
+  id: UUID
+  workspace_id: UUID
+  host: github
+  repository_owner: String
+  repository_name: String
+  remote_name: String
+  remote_url: String
+  upstream_owner?: String
+  upstream_name?: String
+  auth_state
+  permission_state
+  last_verified_at
+}
+```
+
+### LocalDataPolicy
+
+```text
+LocalDataPolicy {
+  workspace_id: UUID
+  event_retention
+  log_retention
+  checkpoint_retention
+  raw_event_storage: disabled | bounded
+  redact_secrets: bool
+  updated_at
 }
 ```
 
@@ -235,6 +290,7 @@ decisionは全てaudit logへ保存。
 - process signal
 - quota snapshot
 - provider adapter hint
+- structured denial / permission notice
 
 分類と挙動:
 
@@ -250,6 +306,8 @@ decisionは全てaudit logへ保存。
 | permission_error | no | no |
 | cancelled | no | no |
 | unknown | no | manual/default-safe |
+
+Exit code 0だけを成功判定に使わない。Providerによってはheadless実行でtoolがsoft-denyされてもprocess自体は成功終了し得るため、NormalizedEvent / stderr notice / tool resultを合わせて評価する。
 
 ## 12. Checkpoint
 
@@ -309,16 +367,16 @@ write lease中に未知の外部変更:
 
 ## 16. GitHub workflow
 
+Gitはoptional capabilityであり、git worktreeは使用しない。
+
 Repository ModeかつGitHub remote:
-- repo identity
-- default branch
-- issue linkage
-- current branch
-- PR linkage
+- RepositoryHostAdapterでremote identityを解決
+- fork / upstreamを区別
+- repo identity / default branch / issue linkage / current branch / PR linkageをTaskへ保存
+- authentication / permission / rate-limit / offline stateをcapabilityとして扱う
+- remote mutationはpermission / audit / replay guard対象
 
-task entityへ保存。
-
-Issue/PR automationはGitHub capabilityがない場合でもCore taskを継続できる。
+Issue/PR automationはGitHub capabilityがない場合、認証が切れた場合、APIが障害中の場合でもCore taskを継続できる。
 
 ## 17. Security
 
@@ -332,6 +390,9 @@ Issue/PR automationはGitHub capabilityがない場合でもCore taskを継続�
 - process resource limit
 - audit
 - no credential persistence
+- local history retention/redaction/deletion
+- workspace trust for untrusted folders
+- RepositoryHost remote-action replay guard
 
 ## 18. Test strategy
 
@@ -353,6 +414,9 @@ Integration:
 - stale session
 - concurrent writer
 - Gitなしrecovery
+- soft-denied tool result
+- local history deletion/redaction
+- RepositoryHost fake integration / remote replay
 
 E2E:
 - macOS
@@ -365,3 +429,33 @@ E2E:
 package/CLIの固定バージョンは実装PR作成時に公式最新版を確認しlockfileで固定する。
 
 AdapterはCLI version numberだけではなくcapability probeで互換性を判断する。
+
+
+## 20. Provider transport baseline
+
+Implementation PR must re-check current official documentation and the installed CLI.
+
+- Codex: official SDK / App Server is the preferred product-integration candidate; structured exec is suitable for bounded automation.
+- Claude Code: structured stream-json input/output is preferred over TUI parsing when supported.
+- Grok: ACP is the preferred IDE/tool-integration candidate; structured headless mode is fallback.
+- Antigravity: persistent stream-json input/output is preferred; structured headless mode is fallback.
+
+Undocumented/private protocols are not stable contracts.
+
+## 21. Local data policy
+
+Prompts, code fragments, command output, file paths, provider events, and checkpoints may contain sensitive information.
+
+The implementation must provide:
+- bounded retention;
+- secret redaction before durable logs where practical;
+- workspace/task history deletion;
+- checkpoint garbage collection;
+- restricted local file permissions;
+- raw provider-event storage that is disabled or bounded by default.
+
+#27 owns the implementation policy.
+
+## 22. Release boundary
+
+Developer build/CI is owned by #9. Production distribution is owned by #29 and must cover signing/notarization, secure update verification, SBOM, third-party license inventory, NOTICE/attribution, and provider-binary redistribution review.
