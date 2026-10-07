@@ -246,6 +246,7 @@ MVP予定:
 - [GitHub Development Workflow](docs/development-workflow.md)
 - [Licensing Policy](docs/licensing.md)
 - [MVP Issue Consistency Audit](docs/issue-audit.md)
+- [MVP Dependency Graph](docs/dependency-graph.md)
 - [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
 - [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
 - [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
@@ -319,4 +320,4 @@ AI CLI Orchestrator is licensed under the **Apache License, Version 2.0** (`Apac
 
 ## Current Status
 
-基本設計・詳細設計・ADR・Issue監査をmainへ集約し、P0実装前の整合性確認を完了する段階です。実装は #30 → #13/#15/#17 → #26/#14/#16 → #4/#5/#3 → #8/#27 → #28/#7/#6/#9 の依存順を基本とします。
+基本設計・詳細設計・ADR・Issue監査をmainへ集約し、P0実装前の整合性確認を完了する段階です。実装順は `docs/dependency-graph.md` をsource of truthとし、blocking prerequisiteはDAGとして管理します。現在の先頭レイヤは #13 / #15 / #17 です。
