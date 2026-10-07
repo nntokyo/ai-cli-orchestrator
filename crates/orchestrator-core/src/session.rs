@@ -352,6 +352,32 @@ mod tests {
     }
 
     #[test]
+    fn missing_stored_session_starts_new() {
+        let mut fixture = Fixture::new();
+        fixture.session.status = SessionStatus::Missing;
+
+        assert_eq!(
+            validate_resume(&fixture.session, &fixture.current),
+            ResumeDecision::StartNew {
+                reason: StartNewReason::SessionMissing
+            }
+        );
+    }
+
+    #[test]
+    fn closed_stored_session_starts_new() {
+        let mut fixture = Fixture::new();
+        fixture.session.status = SessionStatus::Closed;
+
+        assert_eq!(
+            validate_resume(&fixture.session, &fixture.current),
+            ResumeDecision::StartNew {
+                reason: StartNewReason::SessionClosed
+            }
+        );
+    }
+
+    #[test]
     fn starts_new_when_native_session_was_deleted() {
         let mut fixture = Fixture::new();
         fixture.current.native_session_exists = false;
