@@ -135,7 +135,10 @@ pub fn validate_resume(
         };
     }
 
-    if !current.workspace.matches_canonical_path(&session.canonical_cwd) {
+    if !current
+        .workspace
+        .matches_canonical_path(&session.canonical_cwd)
+    {
         return ResumeDecision::StartNew {
             reason: StartNewReason::WorkspaceLocationChanged,
         };
@@ -432,8 +435,7 @@ mod tests {
     #[test]
     fn fingerprint_change_is_reported_as_drift() {
         let mut fixture = Fixture::new();
-        fixture.current.workspace_fingerprint =
-            Some(WorkspaceFingerprint("fingerprint-b".into()));
+        fixture.current.workspace_fingerprint = Some(WorkspaceFingerprint("fingerprint-b".into()));
 
         assert_eq!(
             validate_resume(&fixture.session, &fixture.current),
