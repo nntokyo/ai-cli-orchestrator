@@ -459,3 +459,23 @@ The implementation must provide:
 ## 22. Release boundary
 
 Developer build/CI is owned by #9. Production distribution is owned by #29 and must cover signing/notarization, secure update verification, SBOM, third-party license inventory, NOTICE/attribution, and provider-binary redistribution review.
+
+
+## 23. Frontend/Core typed protocol
+
+Source of truth:
+- `crates/orchestrator-protocol`
+
+Generated TypeScript:
+- `src/generated/protocol/`
+
+Rules:
+- Rust serde shape is authoritative
+- ts-rs generates TypeScript bindings
+- generated bindings are committed and CI drift-checked
+- generated bindings are not manually formatted/edited
+- protocol type availability does not grant Tauri IPC permission
+- runtime IPC requires an explicit capability owned by the implementing Issue
+- protocol version starts at 1 and incompatible wire changes require an explicit version decision
+
+See ADR-0009.
