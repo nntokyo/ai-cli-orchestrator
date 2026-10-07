@@ -1,6 +1,12 @@
 ## Related Issue
 
-Closes #
+Refs #
+
+<!--
+Default to "Refs #<issue>".
+Only when this PR fully satisfies the Issue acceptance criteria should you replace "Refs" with a GitHub closing keyword.
+For partial PRs, never place a closing keyword immediately before the real Issue reference, even in a negated sentence.
+-->
 
 ## Summary
 
@@ -89,7 +95,7 @@ Findings / fixes:
 
 ## Merge Checklist
 
-- [ ] Related Issue is linked with `Closes #...` when appropriate
+- [ ] Related Issue is linked; complete PRs may use a closing keyword, partial PRs use `Refs #...` only
 - [ ] Issue labels are set
 - [ ] Issue assignee represents the current implementation owner, or handoff is documented
 - [ ] Basic design is complete
