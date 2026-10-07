@@ -31,8 +31,9 @@ The Core resolves an existing workspace with filesystem canonicalization.
 Safety rules:
 
 - symlink aliases resolve to the same target identity;
-- Windows comparison is case-insensitive and normalizes extended path prefixes for comparison;
-- macOS/Unix comparison does not blindly lowercase paths because case sensitivity is volume-dependent;
+- path equivalence relies on the OS filesystem canonicalization result rather than custom Unicode case folding;
+- Windows CI verifies that case aliases canonicalize to the same workspace;
+- macOS/Unix paths are not blindly lowercased because case sensitivity is volume-dependent;
 - a moved or renamed workspace is treated as a **new location** until a future persistence/UI flow performs an explicit relink;
 - Git is not required for workspace identity.
 
