@@ -1,22 +1,41 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 use std::{
+    error::Error,
+    fmt,
     fs,
     io,
     path::{Path, PathBuf},
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IdentityValueError {
+    Empty,
+}
+
+impl fmt::Display for IdentityValueError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Empty => formatter.write_str("identity value must not be empty or whitespace"),
+        }
+    }
+}
+
+impl Error for IdentityValueError {}
+
 macro_rules! string_id {
     ($name:ident) => {
-        #[derive(
-            Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
-        )]
+        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
         #[serde(transparent)]
         pub struct $name(String);
 
         impl $name {
-            #[must_use]
-            pub fn new(value: impl Into<String>) -> Self {
-                Self(value.into())
+            pub fn new(value: impl Into<String>) -> Result<Self, IdentityValueError> {
+                let value = value.into();
+                if value.trim().is_empty() {
+                    return Err(IdentityValueError::Empty);
+                }
+
+                Ok(Self(value))
             }
 
             #[must_use]
@@ -25,15 +44,29 @@ macro_rules! string_id {
             }
         }
 
-        impl From<String> for $name {
-            fn from(value: String) -> Self {
+        impl TryFrom<String> for $name {
+            type Error = IdentityValueError;
+
+            fn try_from(value: String) -> Result<Self, Self::Error> {
                 Self::new(value)
             }
         }
 
-        impl From<&str> for $name {
-            fn from(value: &str) -> Self {
+        impl TryFrom<&str> for $name {
+            type Error = IdentityValueError;
+
+            fn try_from(value: &str) -> Result<Self, Self::Error> {
                 Self::new(value)
+            }
+        }
+
+        impl<'de> Deserialize<'de> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                let value = String::deserialize(deserializer)?;
+                Self::new(value).map_err(D::Error::custom)
             }
         }
     };
@@ -109,6 +142,22 @@ mod tests {
         ));
         fs::create_dir_all(&path).expect("temporary workspace should be created");
         path
+    }
+
+    #[test]
+    fn ids_reject_empty_and_whitespace_values() {
+        assert_eq!(WorkspaceId::new(""), Err(IdentityValueError::Empty));
+        assert_eq!(TaskId::new("   "), Err(IdentityValueError::Empty));
+        assert_eq!(ProviderId::new("\t"), Err(IdentityValueError::Empty));
+        assert_eq!(SessionId::new("\n"), Err(IdentityValueError::Empty));
+        assert_eq!(NativeSessionId::new("  "), Err(IdentityValueError::Empty));
+    }
+
+    #[test]
+    fn ids_preserve_non_empty_values() {
+        let id = TaskId::new("task-1").expect("valid task id");
+
+        assert_eq!(id.as_str(), "task-1");
     }
 
     #[test]
