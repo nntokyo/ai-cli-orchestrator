@@ -154,6 +154,15 @@ mod tests {
     }
 
     #[test]
+    fn deserialization_rejects_empty_identity_values() {
+        use serde::de::value::{Error as ValueError, StringDeserializer};
+
+        let deserializer = StringDeserializer::<ValueError>::new("   ".to_owned());
+
+        assert!(WorkspaceId::deserialize(deserializer).is_err());
+    }
+
+    #[test]
     fn ids_preserve_non_empty_values() {
         let id = TaskId::new("task-1").expect("valid task id");
 
