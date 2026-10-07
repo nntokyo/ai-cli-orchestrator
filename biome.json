@@ -6,7 +6,10 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!src/generated"]
+    "includes": [
+      "**",
+      "!src/generated"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -17,7 +20,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "javascript": {
