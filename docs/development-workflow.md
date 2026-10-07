@@ -117,6 +117,34 @@ Documentation Issue requires:
 - content structure
 - link/syntax/consistency validation
 
+## Dependency semantics
+
+Use two different relationship types in implementation Issues.
+
+### Prerequisites
+
+Blocking dependencies that must exist before the Issue can complete.
+
+```text
+## Prerequisites
+- #13 Session Identity
+```
+
+Prerequisites must remain acyclic. Before adding one, check `docs/dependency-graph.md`.
+
+### Integration follow-ups
+
+Related Issues that consume or extend the current Issue later.
+
+```text
+## Integration follow-ups
+- #6 Desktop UI
+```
+
+Follow-ups are not blocking dependencies and may point back to the current component without creating a dependency cycle.
+
+Do not use a blocking dependency merely because two components integrate at runtime. Prefer: contract owner first, implementation/wiring follow-up second.
+
 ## 6. When to split an Issue
 
 Split when:
