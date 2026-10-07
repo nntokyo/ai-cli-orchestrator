@@ -182,6 +182,7 @@ flowchart LR
     RECOVERY[Checkpoint / Recovery]
     PERM[Permission Policy]
     HOST[RepositoryHost Adapter]
+    DATA[Local Data Policy]
     CONTEXT[Portable Context]
     DB[(SQLite)]
     PROVIDER[Provider Adapter]
@@ -197,6 +198,7 @@ flowchart LR
     CORE --> RECOVERY
     CORE --> PERM
     CORE --> HOST
+    CORE --> DATA
     CORE --> CONTEXT
     CORE --> DB
     ENGINE --> ROUTER
