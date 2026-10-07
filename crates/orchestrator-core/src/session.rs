@@ -496,8 +496,7 @@ mod tests {
     fn stale_session_accumulates_multiple_drift_reasons() {
         let mut fixture = Fixture::new();
         fixture.session.status = SessionStatus::Stale;
-        fixture.current.workspace_fingerprint =
-            Some(WorkspaceFingerprint("fingerprint-b".into()));
+        fixture.current.workspace_fingerprint = Some(WorkspaceFingerprint("fingerprint-b".into()));
         fixture.current.permission_revision = Some("permission-v2".into());
 
         assert_eq!(
