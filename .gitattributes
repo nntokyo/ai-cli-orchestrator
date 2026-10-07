@@ -1,0 +1,6 @@
+# Keep source/config formatting deterministic across macOS and Windows.
+* text=auto eol=lf
+
+# Binary application assets.
+*.png binary
+*.ico binary

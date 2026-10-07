@@ -11,9 +11,7 @@ function App() {
       <section className="hero" aria-labelledby="app-title">
         <p className="eyebrow">Bootstrap</p>
         <h1 id="app-title">AI CLI Orchestrator</h1>
-        <p className="lead">
-          A local desktop orchestrator for multiple AI coding CLIs.
-        </p>
+        <p className="lead">A local desktop orchestrator for multiple AI coding CLIs.</p>
       </section>
 
       <section className="status-panel" aria-label="Bootstrap status">
@@ -22,8 +20,8 @@ function App() {
           <strong>Application shell ready</strong>
         </div>
         <p>
-          Provider routing, sessions, permissions, recovery, editor, and
-          terminal features are implemented in their dedicated Issues.
+          Provider routing, sessions, permissions, recovery, editor, and terminal features are
+          implemented in their dedicated Issues.
         </p>
       </section>
 

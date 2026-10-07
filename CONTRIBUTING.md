@@ -57,6 +57,25 @@ Do not manually edit generated dependency lockfiles. Regenerate them with the co
 
 See [ADR-0008](docs/adr/0008-project-layout-toolchain.md).
 
+## Frontend quality
+
+Use the repository scripts:
+
+- `pnpm format` — apply Biome formatting
+- `pnpm lint` — run Biome lint
+- `pnpm check` — TypeScript + Biome CI checks
+
+Generated protocol files under `src/generated/protocol/` must not be edited manually.
+
+To change the frontend/Core contract:
+
+1. edit Rust types in `crates/orchestrator-protocol`;
+2. run `cargo test -p orchestrator-protocol`;
+3. review and commit the generated TypeScript diff;
+4. run `pnpm check`.
+
+See [ADR-0009](docs/adr/0009-typed-frontend-core-protocol.md).
+
 ## Branch examples
 
 - `feat/issue-13-session-identity`

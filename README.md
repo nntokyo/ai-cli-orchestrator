@@ -254,6 +254,7 @@ MVP予定:
 - [ADR-0006 Transport Abstraction](docs/adr/0006-transport.md)
 - [ADR-0007 Unified Permission Policy](docs/adr/0007-permission-policy.md)
 - [ADR-0008 Project Layout and Toolchain](docs/adr/0008-project-layout-toolchain.md)
+- [ADR-0009 Typed Frontend/Core Protocol](docs/adr/0009-typed-frontend-core-protocol.md)
 
 ## MVP Issues
 

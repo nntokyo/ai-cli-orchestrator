@@ -37,6 +37,15 @@ jobs:
       - name: Verify Cargo lockfile
         run: cargo metadata --locked --no-deps --format-version 1 > /dev/null
 
+      - name: Regenerate protocol bindings
+        run: cargo test -p orchestrator-protocol --locked
+
+      - name: Verify generated protocol has no drift
+        shell: bash
+        run: |
+          git diff --exit-code -- src/generated
+          test -z "$(git status --porcelain -- src/generated)"
+
   verify:
     name: Verify ${{ matrix.os }}
     needs: lockfiles
@@ -64,6 +73,9 @@ jobs:
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check frontend formatting and lint
+        run: pnpm biome ci . --reporter=github
 
       - name: Install Rust toolchain
         run: rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
