@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   lockfiles:
-    name: Generate lockfiles
+    name: Verify committed lockfiles
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,24 +28,14 @@ jobs:
           corepack enable
           corepack prepare pnpm@12.9.1 --activate
 
-      - name: Generate pnpm lockfile
-        run: pnpm install --lockfile-only
+      - name: Verify pnpm lockfile
+        run: pnpm install --frozen-lockfile --lockfile-only
 
       - name: Install Rust toolchain
         run: rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
 
-      - name: Generate Cargo lockfile
-        run: cargo generate-lockfile
-
-      - name: Upload generated lockfiles
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
-        with:
-          name: bootstrap-lockfiles
-          path: |
-            pnpm-lock.yaml
-            Cargo.lock
-          if-no-files-found: error
-          retention-days: 3
+      - name: Verify Cargo lockfile
+        run: cargo metadata --locked --no-deps --format-version 1 > /dev/null
 
   verify:
     name: Verify ${{ matrix.os }}
@@ -60,12 +50,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-
-      - name: Download generated lockfiles
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
-        with:
-          name: bootstrap-lockfiles
-          path: .
 
       - name: Set up Node
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -101,40 +85,3 @@ jobs:
 
       - name: Build Tauri binary without bundle
         run: pnpm tauri build --no-bundle
-
-
-  persist-lockfiles:
-    name: Persist generated lockfiles
-    if: >-
-      github.event_name == 'pull_request' &&
-      github.actor == 'nntokyo' &&
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'feat/issue-30-application-bootstrap'
-    needs: lockfiles
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout trusted head branch
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          ref: feat/issue-30-application-bootstrap
-
-      - name: Download generated lockfiles
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
-        with:
-          name: bootstrap-lockfiles
-          path: .
-
-      - name: Commit generated lockfiles once
-        shell: bash
-        run: |
-          if git diff --quiet -- pnpm-lock.yaml Cargo.lock && git ls-files --error-unmatch pnpm-lock.yaml Cargo.lock >/dev/null 2>&1; then
-            echo "Lockfiles already match generated output."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml Cargo.lock
-          git commit -m "chore: commit generated dependency lockfiles"
-          git push origin HEAD:feat/issue-30-application-bootstrap
