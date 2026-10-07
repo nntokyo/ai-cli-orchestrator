@@ -1,9 +1,7 @@
 use serde::{Deserialize, Deserializer, Serialize, de::Error as _};
 use std::{
     error::Error,
-    fmt,
-    fs,
-    io,
+    fmt, fs, io,
     path::{Path, PathBuf},
 };
 
@@ -189,7 +187,8 @@ mod tests {
         let after = root.join("after");
         fs::create_dir_all(&before).expect("workspace should be created");
 
-        let before_identity = WorkspaceIdentity::resolve(&before).expect("workspace should resolve");
+        let before_identity =
+            WorkspaceIdentity::resolve(&before).expect("workspace should resolve");
         fs::rename(&before, &after).expect("workspace should be renamed");
         let after_identity =
             WorkspaceIdentity::resolve(&after).expect("renamed workspace should resolve");
