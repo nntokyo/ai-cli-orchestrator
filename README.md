@@ -24,6 +24,10 @@ AI CLI Orchestratorは、これらを統合し、**作業を止めずに次の�
 - macOS / Windowsで動作するデスクトップUI
 - Codex / Claude Code / Grok / Google Antigravityの統合
 - CLIごとの優先順位設定
+- Task単位のsession identityと実行状態管理
+- Single Writer + external edit conflict control
+- Gitなしworkspaceでもcheckpoint / crash recovery
+- local historyのretention / redaction / deletion
 - 利用可能性・quota・認証状態・障害を考慮した自動切り替え
 - 各CLIのネイティブなresume / continue機能を優先利用
 - CLI切り替え時のPortable Context Handoff
@@ -170,30 +174,34 @@ flowchart LR
     EDITOR[Monaco Editor]
     TERM[xterm.js]
     CORE[Rust Core]
-    ROUTER[Provider Router]
-    SESSION[Native Resume Registry]
-    CONTEXT[Portable Context Handoff]
+    ENGINE[Task Execution Engine]
+    ROUTER[Execution Router]
+    SESSION[Session Registry]
+    LOCK[Workspace Lease]
+    RECOVERY[Checkpoint / Recovery]
+    PERM[Permission Policy]
+    HOST[RepositoryHost Adapter]
+    CONTEXT[Portable Context]
     DB[(SQLite)]
-    CODEX[Codex Adapter]
-    CLAUDE[Claude Adapter]
-    GROK[Grok Adapter]
-    AGY[Antigravity Adapter]
+    PROVIDER[Provider Adapter]
+    TRANSPORT[Transport Adapter]
+    CLI[Vendor CLI]
 
-    UI --> CORE
     EDITOR --> UI
     TERM --> UI
-    CORE --> ROUTER
+    UI --> CORE
+    CORE --> ENGINE
     CORE --> SESSION
+    CORE --> LOCK
+    CORE --> RECOVERY
+    CORE --> PERM
+    CORE --> HOST
     CORE --> CONTEXT
     CORE --> DB
-    ROUTER --> CODEX
-    ROUTER --> CLAUDE
-    ROUTER --> GROK
-    ROUTER --> AGY
-    SESSION --> CODEX
-    SESSION --> CLAUDE
-    SESSION --> GROK
-    SESSION --> AGY
+    ENGINE --> ROUTER
+    ROUTER --> PROVIDER
+    PROVIDER --> TRANSPORT
+    TRANSPORT --> CLI
 ```
 
 ## 技術スタック
@@ -206,7 +214,7 @@ MVP予定:
 - Terminal: xterm.js
 - Core: Rust
 - Local DB: SQLite
-- CLI Integration: subprocess / PTY + Provider Adapter
+- CLI Integration: Provider Adapter + Transport Adapter（official protocol / structured stream / headless process / PTY fallback）
 - CI: GitHub Actions
 - Platforms: macOS / Windows
 
@@ -234,6 +242,7 @@ MVP予定:
 - [CONTRIBUTING](CONTRIBUTING.md)
 - [GitHub Development Workflow](docs/development-workflow.md)
 - [Licensing Policy](docs/licensing.md)
+- [MVP Issue Consistency Audit](docs/issue-audit.md)
 - [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
 - [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
 - [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
@@ -261,6 +270,12 @@ MVP予定:
 - #16 Non-Git Checkpoint / Crash Recovery
 - #17 Unified Permission / Sandbox Policy
 - #19 GitHub Issue/PR Workflow & Templates
+- #25 MVP Issue整合性・敵対レビュー監査
+- #26 Task Execution Engine / Lifecycle
+- #27 Local Data Privacy / Retention
+- #28 GitHub Repository Host Adapter
+- #29 Release Distribution / Signing / SBOM
+- #30 Application Bootstrap / Workspace Layout
 
 ## 開発ルール
 
@@ -299,4 +314,4 @@ AI CLI Orchestrator is licensed under the **Apache License, Version 2.0** (`Apac
 
 ## Current Status
 
-基本設計・詳細設計・ADRはmainへ反映済みです。現在はIssue/PR運用を固定し、P0 Core実装Issueへ移行する段階です。
+基本設計・詳細設計・ADR・Issue監査をmainへ集約し、P0実装前の整合性確認を完了する段階です。実装は #30 → #13/#15/#17 → #26/#14/#16 → #4/#5/#3 → #8/#27 → #28/#7/#6/#9 の依存順を基本とします。
