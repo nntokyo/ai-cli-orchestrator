@@ -57,3 +57,40 @@ jobs:
             src/generated
           if-no-files-found: error
           retention-days: 3
+
+
+  persist:
+    name: Persist generated Phase C artifacts
+    needs: generate
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.actor == 'nntokyo' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'feat/issue-30-contract-tooling'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout trusted head branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: feat/issue-30-contract-tooling
+
+      - name: Download generated artifacts
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: phase-c-generated
+          path: .
+
+      - name: Commit generated artifacts
+        shell: bash
+        run: |
+          if git diff --quiet -- Cargo.lock pnpm-lock.yaml src/generated &&              git ls-files --error-unmatch Cargo.lock pnpm-lock.yaml >/dev/null 2>&1 &&              git ls-files --error-unmatch src/generated/protocol/CoreEvent.ts >/dev/null 2>&1; then
+            echo "Generated artifacts already match."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Cargo.lock pnpm-lock.yaml src/generated
+          git commit -m "chore: commit generated protocol and lockfiles"
+          git push origin HEAD:feat/issue-30-contract-tooling
