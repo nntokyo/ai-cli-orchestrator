@@ -97,3 +97,94 @@ jobs:
 
       - name: Build Tauri binary without bundle
         run: pnpm tauri build --no-bundle
+
+      - name: Runtime startup smoke (macOS)
+        if: matrix.os == 'macos-14'
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          app="$PWD/target/release/ai-cli-orchestrator"
+          stdout_log="$RUNNER_TEMP/ai-cli-orchestrator-smoke.stdout.log"
+          stderr_log="$RUNNER_TEMP/ai-cli-orchestrator-smoke.stderr.log"
+
+          test -x "$app"
+
+          "$app" >"$stdout_log" 2>"$stderr_log" &
+          pid=$!
+
+          cleanup() {
+            if kill -0 "$pid" 2>/dev/null; then
+              kill "$pid" 2>/dev/null || true
+              for _ in 1 2 3 4 5; do
+                if ! kill -0 "$pid" 2>/dev/null; then
+                  break
+                fi
+                sleep 1
+              done
+              if kill -0 "$pid" 2>/dev/null; then
+                kill -9 "$pid" 2>/dev/null || true
+              fi
+            fi
+            wait "$pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT INT TERM
+
+          sleep 5
+
+          if ! kill -0 "$pid" 2>/dev/null; then
+            wait "$pid" || status=$?
+            echo "Application exited during startup smoke (status=${status:-unknown})."
+            echo "--- stdout ---"
+            cat "$stdout_log" || true
+            echo "--- stderr ---"
+            cat "$stderr_log" || true
+            exit 1
+          fi
+
+          echo "Application remained alive for the startup smoke window."
+
+      - name: Runtime startup smoke (Windows)
+        if: matrix.os == 'windows-latest'
+        timeout-minutes: 1
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $app = Join-Path $PWD "target\release\ai-cli-orchestrator.exe"
+          $stdoutLog = Join-Path $env:RUNNER_TEMP "ai-cli-orchestrator-smoke.stdout.log"
+          $stderrLog = Join-Path $env:RUNNER_TEMP "ai-cli-orchestrator-smoke.stderr.log"
+
+          if (-not (Test-Path -LiteralPath $app -PathType Leaf)) {
+            throw "Missing executable: $app"
+          }
+
+          $process = Start-Process -FilePath $app -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
+
+          try {
+            Start-Sleep -Seconds 5
+            $process.Refresh()
+
+            if ($process.HasExited) {
+              Write-Host "Application exited during startup smoke with code $($process.ExitCode)."
+              Write-Host "--- stdout ---"
+              if (Test-Path -LiteralPath $stdoutLog) {
+                Get-Content -LiteralPath $stdoutLog -ErrorAction SilentlyContinue
+              }
+              Write-Host "--- stderr ---"
+              if (Test-Path -LiteralPath $stderrLog) {
+                Get-Content -LiteralPath $stderrLog -ErrorAction SilentlyContinue
+              }
+              throw "Application exited during startup smoke."
+            }
+
+            Write-Host "Application remained alive for the startup smoke window."
+          }
+          finally {
+            $process.Refresh()
+            if (-not $process.HasExited) {
+              Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+              $process.WaitForExit()
+            }
+          }

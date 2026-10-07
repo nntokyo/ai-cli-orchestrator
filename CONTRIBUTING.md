@@ -76,6 +76,12 @@ To change the frontend/Core contract:
 
 See [ADR-0009](docs/adr/0009-typed-frontend-core-protocol.md).
 
+## Desktop launch verification
+
+For bootstrap/runtime startup verification, see [Runtime Startup Verification](docs/runtime-startup-verification.md).
+
+The hosted CI smoke proves process startup/liveness on macOS and Windows; it is not a visual UI assertion. For local interactive verification, use `pnpm tauri dev`.
+
 ## Branch examples
 
 - `feat/issue-13-session-identity`
