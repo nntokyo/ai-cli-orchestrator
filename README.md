@@ -247,6 +247,7 @@ MVP予定:
 - [Licensing Policy](docs/licensing.md)
 - [MVP Issue Consistency Audit](docs/issue-audit.md)
 - [MVP Dependency Graph](docs/dependency-graph.md)
+- [Session Identity and Resume Validation](docs/session-identity.md)
 - [ADR-0001 Desktop Stack](docs/adr/0001-desktop-stack.md)
 - [ADR-0002 Provider Adapter](docs/adr/0002-provider-adapter.md)
 - [ADR-0003 Native Resume First](docs/adr/0003-session-resume.md)
