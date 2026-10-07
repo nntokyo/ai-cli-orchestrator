@@ -2,7 +2,7 @@
 
 Issue: #2  
 Parent Epic: #1  
-Status: Proposed  
+Status: Accepted for MVP  
 Updated: 2026-10-07
 
 ## 1. 目的
@@ -36,27 +36,29 @@ MVPでは以下を必須としない。
 flowchart LR
   UI[Desktop UI<br/>React + TypeScript]
   CORE[Rust Core]
-  EDITOR[Monaco]
-  TERM[xterm.js]
+  ENGINE[Task Execution Engine]
   ROUTER[Execution Router]
   SESS[Session Registry]
   LOCK[Workspace Lease Manager]
   REC[Checkpoint / Recovery]
   PERM[Permission Policy]
+  HOST[RepositoryHost Adapter]
+  DATA[Local Data Policy]
   DB[(SQLite)]
   PA[Provider Adapter]
   TA[Transport Adapter]
   CLI[Vendor CLI]
 
-  EDITOR --> UI
-  TERM --> UI
   UI --> CORE
-  CORE --> ROUTER
+  CORE --> ENGINE
   CORE --> SESS
   CORE --> LOCK
   CORE --> REC
   CORE --> PERM
+  CORE --> HOST
+  CORE --> DATA
   CORE --> DB
+  ENGINE --> ROUTER
   ROUTER --> PA
   PA --> TA
   TA --> CLI
@@ -81,6 +83,7 @@ flowchart LR
 
 責務:
 - Workspace / Task lifecycle
+- Run state machine / cancellation / reroute / idempotency
 - Provider routing
 - Session identity
 - Workspace lock
@@ -88,6 +91,8 @@ flowchart LR
 - Permission normalization
 - Audit log
 - persistence
+- RepositoryHost coordination
+- local data retention/redaction/deletion coordination
 
 CoreはProvider固有のコマンドライン文字列やJSON schemaへ依存しない。
 
@@ -115,6 +120,23 @@ Provider固有責務:
 4. PTY interactive fallback
 
 Provider AdapterとTransport Adapterを分離する。
+
+### 4.5 Task Execution Engine
+
+責務:
+- Task / Run state machine
+- cancellation / interrupt
+- bounded retry / reroute
+- side-effect idempotency guard
+- incomplete run reconciliation
+
+### 4.6 RepositoryHost Adapter
+
+GitHub等のremote host integrationをGit/Coreから分離する。GitHub認証やAPI障害がLocal Workspace Modeを停止させてはならない。
+
+### 4.7 Local Data Policy
+
+SQLite、logs、raw events、checkpointsに保存されるcode/prompt/path等を機密データとして扱い、retention / redaction / deletionをCore policyとして管理する。
 
 ## 5. Workspace Mode
 
@@ -300,8 +322,10 @@ SQLite主要entity:
 - workspace_lease
 - permission_policy
 - user_setting
+- repository_host_link
+- schema_migration
 
-API keys / tokensは保存しない。
+API keys / tokensは保存しない。prompt/code/command output/checkpoint等も機密情報を含み得るため、retention/redaction/deletionは#27で定義する。
 
 ## 15. OS
 
@@ -309,7 +333,7 @@ API keys / tokensは保存しない。
 - GUI launch時PATH差異に対応
 - login shell環境の取得手段を用意
 - Apple Silicon / Intel
-- signing / notarizationはrelease phaseで追加
+- signing / notarization / secure updater / SBOMは#29のrelease phaseで追加
 
 ### Windows
 - path separator / Unicode / space
@@ -339,3 +363,8 @@ Provider CLIは変化が速いため:
 - #15 Transport
 - #16 Recovery
 - #17 Permission
+- #26 Task Execution Engine
+- #27 Local Data Privacy / Retention
+- #28 GitHub Repository Host Adapter
+- #29 Release Distribution / Signing / SBOM
+- #30 Application Bootstrap
