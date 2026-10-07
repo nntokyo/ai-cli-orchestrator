@@ -1,0 +1,87 @@
+name: Bootstrap CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lockfiles:
+    name: Verify committed lockfiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Set up Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@12.9.1 --activate
+
+      - name: Verify pnpm lockfile
+        run: pnpm install --frozen-lockfile --lockfile-only
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+
+      - name: Verify Cargo lockfile
+        run: cargo metadata --locked --no-deps --format-version 1 > /dev/null
+
+  verify:
+    name: Verify ${{ matrix.os }}
+    needs: lockfiles
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-14
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Set up Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@12.9.1 --activate
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+
+      - name: Check Rust formatting
+        run: cargo fmt --all --check
+
+      - name: Run Rust clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Run Rust tests
+        run: cargo test --workspace --locked
+
+      - name: Check TypeScript
+        run: pnpm check
+
+      - name: Build frontend
+        run: pnpm build
+
+      - name: Build Tauri binary without bundle
+        run: pnpm tauri build --no-bundle

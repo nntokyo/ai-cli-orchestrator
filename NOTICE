@@ -6,3 +6,7 @@ This product is licensed under the Apache License, Version 2.0.
 Third-party software, provider CLIs, APIs, product names, and trademarks are
 subject to their respective licenses, terms, and trademark policies. They are
 not relicensed by the AI CLI Orchestrator project.
+
+Portions of the initial application scaffold are adapted from patterns in
+Tauri create-tauri-app, Copyright 2019-2022 Tauri Programme within
+The Commons Conservancy, available under Apache-2.0 OR MIT.
