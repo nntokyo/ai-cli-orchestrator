@@ -35,6 +35,8 @@ MVPでは以下を必須としない。
 ```mermaid
 flowchart LR
   UI[Desktop UI<br/>React + TypeScript]
+  EDITOR[Monaco]
+  TERM[xterm.js]
   CORE[Rust Core]
   ENGINE[Task Execution Engine]
   ROUTER[Execution Router]
@@ -44,11 +46,14 @@ flowchart LR
   PERM[Permission Policy]
   HOST[RepositoryHost Adapter]
   DATA[Local Data Policy]
+  CONTEXT[Portable Context]
   DB[(SQLite)]
   PA[Provider Adapter]
   TA[Transport Adapter]
   CLI[Vendor CLI]
 
+  EDITOR --> UI
+  TERM --> UI
   UI --> CORE
   CORE --> ENGINE
   CORE --> SESS
@@ -57,6 +62,7 @@ flowchart LR
   CORE --> PERM
   CORE --> HOST
   CORE --> DATA
+  CORE --> CONTEXT
   CORE --> DB
   ENGINE --> ROUTER
   ROUTER --> PA
