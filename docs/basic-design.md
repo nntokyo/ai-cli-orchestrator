@@ -261,7 +261,7 @@ Core分類:
 - cancelled
 - unknown
 
-「test失敗」をProvider障害と誤認しない。
+「test失敗」をProvider障害と誤認しない。process exit codeだけで成功判定せず、structured event / tool result / permission denial noticeも評価する。
 
 ## 11. Failover
 
