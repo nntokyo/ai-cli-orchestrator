@@ -68,7 +68,7 @@ See [ADR-0008](docs/adr/0008-project-layout-toolchain.md).
 PR templateを使用してください。
 
 必須:
-- Related Issue / `Closes #...`
+- Related Issue: use `Refs #...` by default; switch to a GitHub closing keyword only when the PR fully satisfies the Issue
 - ownership / handoff
 - basic design
 - detailed design
@@ -78,6 +78,13 @@ PR templateを使用してください。
 - Provider CLI compatibility
 - security/permission impact
 - adversarial review result
+
+### Partial PRs and Issue state
+
+For partial delivery:
+- use `Refs #<issue>` in the PR;
+- never write a GitHub closing keyword directly before the real Issue reference, including inside a negated sentence;
+- verify after merge that the parent Issue remains open.
 
 ## Provider changes
 
