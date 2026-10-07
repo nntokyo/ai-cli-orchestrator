@@ -24,6 +24,8 @@ The minimum identity boundary is:
 - native Provider session ID
 - canonical working directory
 
+Identity values are non-empty by construction. Empty or whitespace-only IDs are rejected both by constructors and serde deserialization.
+
 ## Workspace path policy
 
 The Core resolves an existing workspace with filesystem canonicalization.
