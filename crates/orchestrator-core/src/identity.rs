@@ -51,22 +51,20 @@ string_id!(NativeSessionId);
 /// The identity is intentionally path-based. A moved or renamed workspace is
 /// treated as a different location until a later persistence/UI flow performs
 /// an explicit relink. This is safer than silently reusing a session.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+///
+/// The current identity must be resolved from the filesystem rather than
+/// deserialized from persisted comparison data. Persisted sessions store their
+/// canonical working directory separately.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WorkspaceIdentity {
     canonical_path: PathBuf,
-    comparison_key: String,
 }
 
 impl WorkspaceIdentity {
     /// Resolves symlinks and filesystem aliases for an existing workspace.
     pub fn resolve(path: impl AsRef<Path>) -> io::Result<Self> {
         let canonical_path = fs::canonicalize(path)?;
-        let comparison_key = comparison_key(&canonical_path);
-
-        Ok(Self {
-            canonical_path,
-            comparison_key,
-        })
+        Ok(Self { canonical_path })
     }
 
     #[must_use]
@@ -76,31 +74,19 @@ impl WorkspaceIdentity {
 
     #[must_use]
     pub fn same_location(&self, other: &Self) -> bool {
-        self.comparison_key == other.comparison_key
+        self.canonical_path == other.canonical_path
     }
 
+    /// Compares against a path that was already canonicalized when the session
+    /// metadata was captured.
+    ///
+    /// This deliberately does not implement its own Unicode case folding. If
+    /// platform canonicalization cannot prove the paths are the same, the
+    /// safer outcome is a false negative that starts a new session.
     #[must_use]
     pub fn matches_canonical_path(&self, path: &Path) -> bool {
-        self.comparison_key == comparison_key(path)
+        self.canonical_path == path
     }
-}
-
-#[cfg(windows)]
-fn comparison_key(path: &Path) -> String {
-    let mut value = path.to_string_lossy().replace('/', "\");
-
-    if let Some(rest) = value.strip_prefix(r"\\?\UNC\") {
-        value = format!(r"\\{rest}");
-    } else if let Some(rest) = value.strip_prefix(r"\\?\") {
-        value = rest.to_owned();
-    }
-
-    value.to_lowercase()
-}
-
-#[cfg(not(windows))]
-fn comparison_key(path: &Path) -> String {
-    path.to_string_lossy().into_owned()
 }
 
 #[cfg(test)]
@@ -147,7 +133,8 @@ mod tests {
 
         let before_identity = WorkspaceIdentity::resolve(&before).expect("workspace should resolve");
         fs::rename(&before, &after).expect("workspace should be renamed");
-        let after_identity = WorkspaceIdentity::resolve(&after).expect("renamed workspace should resolve");
+        let after_identity =
+            WorkspaceIdentity::resolve(&after).expect("renamed workspace should resolve");
 
         assert!(!before_identity.same_location(&after_identity));
 
@@ -175,19 +162,18 @@ mod tests {
 
     #[cfg(windows)]
     #[test]
-    fn windows_comparison_key_is_case_insensitive() {
-        let upper = comparison_key(Path::new(r"C:\Users\Example\Workspace"));
-        let lower = comparison_key(Path::new(r"c:\users\example\workspace"));
+    fn windows_canonicalization_handles_case_aliases() {
+        let root = temporary_workspace("case");
+        let mixed = root.join("MixedCaseWorkspace");
+        fs::create_dir_all(&mixed).expect("workspace should be created");
 
-        assert_eq!(upper, lower);
-    }
+        let alternate = root.join("mixedcaseworkspace");
+        let mixed_identity = WorkspaceIdentity::resolve(&mixed).expect("workspace should resolve");
+        let alternate_identity =
+            WorkspaceIdentity::resolve(&alternate).expect("case alias should resolve");
 
-    #[cfg(windows)]
-    #[test]
-    fn windows_comparison_key_strips_extended_prefix() {
-        let extended = comparison_key(Path::new(r"\\?\C:\Users\Example\Workspace"));
-        let normal = comparison_key(Path::new(r"C:\Users\Example\Workspace"));
+        assert!(mixed_identity.same_location(&alternate_identity));
 
-        assert_eq!(extended, normal);
+        fs::remove_dir_all(root).expect("temporary workspace should be removed");
     }
 }
