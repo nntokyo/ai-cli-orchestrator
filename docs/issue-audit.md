@@ -242,3 +242,25 @@ Checked on 2026-10-07:
 - Google Antigravity resume: https://antigravity.google/docs/cli/commands/resume/
 
 Provider specifications are fast-moving. This audit records architecture assumptions; implementation PRs must re-check the official docs and actual installed CLI.
+
+
+## Dependency graph correction — 2026-10-07
+
+A second audit found circular blocking dependencies in the initial Issue relationships:
+
+- #5 <-> #17
+- #4 <-> #26
+- #14 <-> #16
+- #16 <-> #27
+- #8 <-> #13
+
+The resolution is documented in `docs/dependency-graph.md`.
+
+Dependency semantics are now split into:
+
+- **Prerequisites** — blocking DAG edges
+- **Integration follow-ups** — later wiring/consumption, not blocking edges
+
+#8 was promoted from P1 to P0 because Native Resume #3 requires durable session persistence and #8 is on that critical path.
+
+The current implementation begins with provider-independent contracts #13 / #15 / #17 after the completed #30 bootstrap.
