@@ -1,0 +1,21 @@
+[workspace]
+members = ["crates/orchestrator-core", "src-tauri"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "Apache-2.0"
+repository = "https://github.com/nntokyo/ai-cli-orchestrator"
+authors = ["AI CLI Orchestrator contributors"]
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
