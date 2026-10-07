@@ -45,6 +45,18 @@ assigneeは恒久的な所有者ではなく、**現在の実装オーナー**�
 - 引き継ぎ時はassigneeを更新する
 - templateへ特定アカウントをhard-codeしない
 
+## Toolchain baseline
+
+Use the versions pinned by the repository:
+
+- Node.js: `.node-version`
+- Rust: `rust-toolchain.toml`
+- Package manager: pnpm (exact version will be pinned in `package.json` when the scaffold lands)
+
+Do not manually edit generated dependency lockfiles. Regenerate them with the corresponding package manager and review the diff.
+
+See [ADR-0008](docs/adr/0008-project-layout-toolchain.md).
+
 ## Branch examples
 
 - `feat/issue-13-session-identity`

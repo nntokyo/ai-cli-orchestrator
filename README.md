@@ -253,6 +253,7 @@ MVP予定:
 - [ADR-0005 Single Writer](docs/adr/0005-single-writer.md)
 - [ADR-0006 Transport Abstraction](docs/adr/0006-transport.md)
 - [ADR-0007 Unified Permission Policy](docs/adr/0007-permission-policy.md)
+- [ADR-0008 Project Layout and Toolchain](docs/adr/0008-project-layout-toolchain.md)
 
 ## MVP Issues
 
