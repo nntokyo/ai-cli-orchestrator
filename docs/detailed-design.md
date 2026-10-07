@@ -1,6 +1,9 @@
 # 詳細設計
 
 Issue: #2  
+Parent Epic: #1  
+Implementation bootstrap: #30  
+Task execution owner: #26  
 Status: Accepted for MVP  
 Updated: 2026-10-07
 
@@ -330,6 +333,8 @@ write lease中に未知の外部変更:
 - 自動failover前にrevalidate
 
 ## 16. GitHub workflow
+
+Gitはoptional capabilityであり、git worktreeは使用しない。
 
 Repository ModeかつGitHub remote:
 - RepositoryHostAdapterでremote identityを解決
