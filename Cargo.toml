@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/orchestrator-core", "src-tauri"]
+members = ["crates/orchestrator-core", "crates/orchestrator-protocol", "src-tauri"]
 resolver = "3"
 
 [workspace.package]
@@ -9,6 +9,10 @@ rust-version = "1.99"
 license = "Apache-2.0"
 repository = "https://github.com/nntokyo/ai-cli-orchestrator"
 authors = ["AI CLI Orchestrator contributors"]
+
+[workspace.dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+ts-rs = { version = "12.0.1", features = ["serde-compat"] }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
