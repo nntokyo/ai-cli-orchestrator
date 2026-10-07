@@ -101,3 +101,40 @@ jobs:
 
       - name: Build Tauri binary without bundle
         run: pnpm tauri build --no-bundle
+
+
+  persist-lockfiles:
+    name: Persist generated lockfiles
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.actor == 'nntokyo' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'feat/issue-30-application-bootstrap'
+    needs: lockfiles
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout trusted head branch
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: feat/issue-30-application-bootstrap
+
+      - name: Download generated lockfiles
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: bootstrap-lockfiles
+          path: .
+
+      - name: Commit generated lockfiles once
+        shell: bash
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml Cargo.lock && git ls-files --error-unmatch pnpm-lock.yaml Cargo.lock >/dev/null 2>&1; then
+            echo "Lockfiles already match generated output."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml Cargo.lock
+          git commit -m "chore: commit generated dependency lockfiles"
+          git push origin HEAD:feat/issue-30-application-bootstrap
