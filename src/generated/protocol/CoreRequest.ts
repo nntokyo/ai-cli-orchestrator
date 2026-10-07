@@ -5,4 +5,4 @@ import type { RequestId } from "./RequestId";
  * Minimal request contract used to validate code generation before runtime
  * IPC is enabled.
  */
-export type CoreRequest = { "type": "getBootstrapStatus", request_id: RequestId, };
+export type CoreRequest = { "type": "getBootstrapStatus", requestId: RequestId, };

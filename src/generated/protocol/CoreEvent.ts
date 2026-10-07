@@ -4,4 +4,4 @@ import type { RequestId } from "./RequestId";
 /**
  * Core-to-frontend event contract.
  */
-export type CoreEvent = { "type": "bootstrapStatus", request_id: RequestId, protocol_version: number, status: string, } | { "type": "protocolError", request_id: RequestId | null, code: string, message: string, };
+export type CoreEvent = { "type": "bootstrapStatus", requestId: RequestId, protocolVersion: number, status: string, } | { "type": "protocolError", requestId: RequestId | null, code: string, message: string, };
