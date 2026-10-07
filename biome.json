@@ -6,7 +6,11 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!src/generated"]
+    "includes": [
+      "**",
+      "!src/generated",
+      "!src-tauri/gen/**"
+    ]
   },
   "formatter": {
     "enabled": true,
