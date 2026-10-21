@@ -5,6 +5,9 @@
 //! Tauri, webview, and provider-process integration must remain outside this
 //! crate so the core can be unit-tested without launching the desktop shell.
 
+pub mod identity;
+pub mod session;
+
 /// Product name shared by shell integrations.
 pub const PRODUCT_NAME: &str = "AI CLI Orchestrator";
 
