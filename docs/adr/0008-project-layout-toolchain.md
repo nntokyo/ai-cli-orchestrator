@@ -8,7 +8,7 @@ Issue: #30
 
 AI CLI Orchestrator uses the following bootstrap baseline:
 
-- Node.js 24.21.0 LTS
+- Node.js 24.22.3 LTS
 - pnpm 12.9.1
 - Rust 1.99.0 stable
 - React 19.3.0
